@@ -6,6 +6,7 @@ import Link from 'umi/link';
 import styles from './index.less';
 import BaseMenu, { getMenuMatches } from './BaseMenu';
 import { urlToList } from '../_utils/pathTools';
+import './screen.css';
 
 const { Sider } = Layout;
 
@@ -55,6 +56,7 @@ export default class SiderMenu extends PureComponent {
     this.flatMenuKeys = getFlatMenuKeys(props.menuData);
     this.state = {
       openKeys: getDefaultCollapsedSubMenus(props),
+      date: new Date(),
     };
   }
 
@@ -86,6 +88,20 @@ export default class SiderMenu extends PureComponent {
     });
   };
 
+  componentDidMount() {
+    this.timer = setInterval(() => this.tick(), 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(timer);
+  }
+
+  tick() {
+    this.setState({
+      date: new Date(),
+    });
+  }
+
   render() {
     const { logo, collapsed, onCollapse, fixSiderbar, theme } = this.props;
     const { openKeys } = this.state;
@@ -108,10 +124,19 @@ export default class SiderMenu extends PureComponent {
         className={siderClassName}
       >
         <div className={styles.logo} id="logo">
-          <Link to="/">
-            {/*<img src={logo} alt="logo" />*/}
-            <h1 style={{ color: '#666' }}> modbus管理中心</h1>
-          </Link>
+          {/*<Link to="/">*/}
+          {/*  /!*<img src={logo} alt="logo" />*!/*/}
+          {/*  <h1 style={{ color: '#666' }}> modbus管理中心1</h1>*/}
+          {/*</Link>*/}
+          {/*<div className="clock_wrap">*/}
+          {/*  <p className="clock_num">{this.state.date.toLocaleTimeString()}</p>*/}
+          {/*</div>*/}
+          <div className="date-date">
+            <span id="js-clock-full-year">{this.state.date.getFullYear()}</span> 年
+            <span id="js-clock-month">{this.state.date.getMonth()}</span> 月
+            <span id="js-clock-date">{this.state.date.getDate()}</span> 日
+            <span id="js-clock-day">{this.state.date.toLocaleTimeString()}</span>
+          </div>
         </div>
         <BaseMenu
           {...this.props}
