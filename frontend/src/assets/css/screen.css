@@ -1,0 +1,23 @@
+
+.date {
+  /* width: 500px;*/
+  flex: 0.4;
+  text-align: center;
+  padding-top: 20px;
+  font-family: verdana, Microsoft Yahei
+}
+
+.date-date {
+  font-size: 25px;
+  line-height: 1
+}
+
+.date-time {
+  font-size: 46px;
+  letter-spacing: 5px;
+  font-weight: 600;
+}
+
+.date span {
+  padding: 0 5px
+}
