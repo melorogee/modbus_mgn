@@ -104,6 +104,7 @@ export default {
   'menu.account.logout': '退出登录',
 
   //   新增
+  'menu.homeIndex': '首页',
   'menu.periodManage': '开关管理',
   'menu.studentInfo' : '开关操作记录',
   'menu.elecInfo' : '电表数据日志',

@@ -118,3 +118,18 @@ export async function goLogin(params) {
 
 
 
+//开关列表
+export async function getElectricList(params) {
+  return request('/api/modbus_api/getElectricList', {
+    method: 'GET',
+    body: params,
+  });
+}
+
+//修改开关状态
+export async function switchFn(params) {
+  return request('/api/modbus_api/switchFn', {
+    method: 'POST',
+    body: params,
+  });
+}

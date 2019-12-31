@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
+
 @connect(({ login }) => ({ login }))
 class Index extends PureComponent {
   constructor(props) {

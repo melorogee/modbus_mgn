@@ -8,25 +8,30 @@ export default [
     path: '/',
     component: '../layouts/BasicLayout',
     routes: [
-      { path: '/', redirect: '/period-manage' },
-      { path: '/404', redirect: '/period-manage' },
-
+      { path: '/', redirect: '/index' },
+      { path: '/404', redirect: '/index' },
+      {
+        path: '/index',
+        name: 'homeIndex',
+        icon: 'home',
+        component: './home/index',
+      },
       {
         path: '/period-manage',
         name: 'periodManage',
-        icon: 'calendar',
+        icon: 'control',
         component: './periodManage/index',
       },
       {
         path: '/student-info',
         name: 'studentInfo',
-        icon: 'team',
+        icon: 'calendar',
         component: './studentInfo/index',
       },
       {
         path: '/elec-info',
         name: 'elecInfo',
-        icon: 'account-book',
+        icon: 'profile',
         component: './elecinfo/index',
       },
       {
