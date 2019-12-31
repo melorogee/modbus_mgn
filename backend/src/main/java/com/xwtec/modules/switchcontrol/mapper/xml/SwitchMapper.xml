@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xwtec.modules.switchcontrol.mapper.SwitchMapper">
+    <select id="getSwitchList" resultType="map" parameterType="java.lang.String">
+        select t1.switch_name as switchname ,t1.switch_oncode as oncode ,t1.switch_offcode as offcode,t1.state from modbus_swicthinfo t1
+        where t1.box = #{0}
+    </select>
+
+    <select id="getAllBox" resultType="map">
+        select box_id as boxid,box_name as boxname from modbus_boxinfo
+    </select>
+
+    <update id="changeSwitchSate" parameterType="java.lang.String">
+        update modbus_swicthinfo set state = #{value} where switch_oncode = #{code} or switch_offcode = #{code}
+    </update>
+
+
+    <insert id="insertSwitchLog" parameterType="java.lang.String">
+
+        insert into modbus_switch_log
+        select t2.box_name,t1.switch_name,#{slaveID},#{address},#{value},now() from modbus_swicthinfo t1 left join modbus_boxinfo t2 on t1.box = t2.box_id
+        where t1.switch_oncode =  #{code} or t1.switch_offcode =  #{code}
+    </insert>
+
+    <select id="getSwitchLog" resultType="map">
+        select box_name as boxname, switch_name as switchname,slave_id as slaveid,address ,if(action='0','关闭','开启') as action ,time from modbus_switch_log order by time desc limit 100
+    </select>
+
+    <insert id="insertElecticLog" parameterType="map">
+        insert into modbus_electric_status (uab,
+                                            ubc,
+                                            uca,
+                                            ia,
+                                            ib,
+                                            ic,
+                                            pt,
+                                            qt,
+                                            pft,
+                                            freq,
+                                            time)
+                                            values(#{uab},
+                                                    #{ubc},
+                                                    #{uca},
+                                                    #{ia},
+                                                    #{ib},
+                                                    #{ic},
+                                                    #{pt},
+                                                    #{qt},
+                                                    #{pft},
+                                                    #{freq},
+                                                    now())
+    </insert>
+
+
+    <select id="getElectConfig" resultType="map">
+
+            select * from modbus_electric_config
+
+    </select>
+
+
+    <select id="getElecList" resultType="map">
+            select * from modbus_electric_status order by time desc limit 100
+    </select>
+
+    <select id="getSwitchIpAndPort" resultType="map" parameterType="java.lang.String">
+        select ip_on,ip_off,port_on,port_off from modbus_swicthinfo where switch_oncode = #{code} or switch_offcode = #{code}
+    </select>
+
+    <select id="getUser" parameterType="map" resultType="java.lang.Integer">
+        select count(*) from modbus_user where user_name = #{user_name} and password =md5(#{pass})
+    </select>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xwtec.modules.system.mapper.SysDepartMapper">
+
+    <select id="getDepartList" parameterType="string" resultType="map">
+        select id,parent_id as parentId,depart_name as departName,org_type as orgType,org_code as orgCode
+        from sys_depart
+        where org_type = #{orgType}
+    </select>
+
+    <select id="getDepartChildList" parameterType="string" resultType="map">
+        select id,parent_id as parentId,depart_name as departName,org_type as orgType,org_code as orgCode
+        from sys_depart       
+        where parent_id = #{parentId}
+    </select>
+
+    <select id="queryChildDepart" parameterType="string" resultType="com.xwtec.modules.system.entity.SysDepart">
+        select id, parent_id, depart_name, depart_order, org_type,
+               org_code, status, del_flag, create_by, create_time,
+               update_by, update_time, remark
+        from sys_depart where FIND_IN_SET(id,getChildList(#{deptId})) and del_flag = '0'
+    </select>
+
+    <select id="queryParentDepart" parameterType="string" resultType="com.xwtec.modules.system.entity.SysDepart">
+        select id, parent_id, depart_name, depart_order, org_type,
+               org_code, status, del_flag, create_by, create_time,
+               update_by, update_time, remark
+        from sys_depart where FIND_IN_SET(id,getParentList(#{deptId})) and del_flag = '0'
+    </select>
+
+    <select id="selectByDeptName" parameterType="string" resultType="com.xwtec.modules.system.entity.SysDepart">
+        select id, parent_id, depart_name, depart_order, org_type,
+               org_code, status, del_flag, create_by, create_time,
+               update_by, update_time, remark
+        from sys_depart where depart_name = #{deptName}
+    </select>
+</mapper>

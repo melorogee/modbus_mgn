@@ -1,0 +1,12 @@
+# Created by .ignore support plugin (hsz.mobi)
+# 忽略上传文件配置
+*.iml
+*.log
+*.zip
+*.idea
+# 配置文件后缀
+*.class
+*.classpath
+*.project
+*.settings
+*.target

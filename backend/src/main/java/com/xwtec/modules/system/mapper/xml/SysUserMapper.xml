@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xwtec.modules.system.mapper.SysUserMapper">
+	<sql id="SysUser_Columns">
+		id, username, realname, password, salt, avatar, birthday, sex, email, phone, status,dept_id deptId,
+		del_flag delFlag, create_by createBy, create_time , update_by , update_time
+	</sql>
+	<insert id="insertUserKnow">
+		insert into t_user_knowledge(id, user_id, knowledge_id, create_time, del_flag)
+		values
+		<foreach collection="knowList" item="item" separator=",">
+			(REPLACE(UUID(),"-",""),
+			 #{userId},
+			left(#{item},32),
+			 now(),
+			 '0'
+			)
+		</foreach>
+	</insert>
+	<delete id="deleteUserKnow">
+		delete from t_user_knowledge where user_id=#{userId}
+	</delete>
+	<!-- 根据用户名查询 -->
+	<select id="getUserByName" resultType="com.xwtec.modules.system.entity.SysUser">
+		select
+		<include refid="SysUser_Columns" />
+		from  sys_user   where del_flag = '0' and username = #{username}
+	</select>
+
+	<!-- 更新用户信息 -->
+	<update id="updateUserInfo" parameterType="com.xwtec.modules.system.entity.SysUser">
+		update sys_user set
+		<if test="realname != null and realname != '' ">
+			realname = #{realname},
+		</if>
+		<if test="status != null and status != '' ">
+			status = #{status},
+		</if>
+		<if test="delFlag != null and delFlag != '' ">
+			del_Flag = #{delFlag},
+		</if>
+		<if test="updateBy != null and updateBy != '' ">
+			update_by = #{updateBy},
+		</if>
+		<if test="phone != null and phone != '' ">
+			phone = #{phone},
+		</if>
+		<if test="email != null and email != '' ">
+			email = #{email},
+		</if>
+		<if test="sex != null and sex != '' ">
+			sex = #{sex},
+		</if>
+		<if test="salt != null and salt != '' ">
+			salt = #{salt},
+		</if>
+		<if test="avatar != null and avatar != '' ">
+			avatar = #{avatar},
+		</if>
+		<if test="remark != null and remark != '' ">
+			remark = #{remark},
+		</if>
+		<if test="deptId != null and deptId != '' ">
+			dept_id = #{deptId},
+		</if>
+		update_time = now()
+		where id = #{id}
+	</update>
+
+	<select id="getPageList" parameterType="com.xwtec.modules.system.entity.SysUser" resultType="com.xwtec.modules.system.entity.SysUser">
+		select t.id, t.username, t.realname, t.password, t.salt, t.avatar, t.birthday, t.sex, t.email, t.phone, t.status,
+		t.del_flag as delFlag,
+		t.create_by as createBy,
+		t.create_time as createTime,
+		t.update_by updateBy,
+		t.update_time updateTime,
+		t.role_id roleId,
+		t.remark ,
+		t.dept_id as deptId,
+		t1.role_id roleCode,
+		t2.link_know linkKnow,
+		t2.role_name remarkC from sys_user t
+		inner join sys_user_role t1 on t.id = t1.user_id
+		inner join sys_role t2 on t1.role_id = t2.id
+		where t.del_flag='0' and t1.del_flag ='0'
+		<if test="username != null and username != ''">
+			AND t.username LIKE concat('%', #{username,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="phone != null and phone != ''">
+			AND t.phone LIKE concat('%', #{phone,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="realname != null and realname != ''">
+			AND t.realname LIKE concat('%', #{realname,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="status != null and status != ''">
+			AND t.status LIKE concat('%', #{status,jdbcType=VARCHAR},'%')
+		</if>
+		<if test="remarkB != null and remarkB != ''">
+			AND t2.id = #{remarkB,jdbcType=VARCHAR}
+		</if>
+		<if test="remark != null and remark != ''">
+			AND t.create_time  <![CDATA[>]]> #{remark,jdbcType=VARCHAR}
+		</if>
+		<if test="remarkC != null and remarkC != ''">
+			AND t.create_time  <![CDATA[<]]> #{remarkC,jdbcType=VARCHAR}
+		</if>
+		AND t.username!='superAdmin'
+		<choose>
+			<when test="remarkA='desc'">
+				ORDER BY t.create_time desc
+			</when>
+			<when test="remarkA='asc'">
+				ORDER BY t.create_time asc
+			</when>
+		</choose>
+
+	</select>
+    <select id="selectKnowledgeIdByUserId" resultType="java.lang.String">
+		select knowledge_id from t_user_knowledge where del_flag = '0' and user_id = #{userId}
+	</select>
+	<select id="selectKnowListByUser" resultType="java.lang.String">
+		select concat(knowledge_id,':2' ) from t_user_knowledge where user_id=#{userId}
+	</select>
+	<select id="selectKnowNameListByUser" resultType="java.lang.String">
+		select t2.name from t_user_knowledge t1 left join t_knowledge_type t2 on t1.knowledge_id = t2.id where t1.user_id=#{userId}
+	</select>
+</mapper>
