@@ -1,9 +1,16 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Card, Table, Divider, Tag, Row, Col, Button, Input, Icon, message, Modal,Calendar ,Select,Switch} from 'antd';
+import { Card, Table, Divider, Tag, Row, Col, Button, Input, Icon, message, Modal, DatePicker} from 'antd';
 import { cpus } from 'os';
 import moment from 'moment';
+
+import echarts from 'echarts/lib/echarts';
+import 'echarts/lib/chart/line';
+import 'echarts/lib/component/tooltip';
+import 'echarts/lib/component/title';
+import 'echarts/lib/component/legend';
+import 'echarts/lib/component/grid';
 
 const electricOpenImg = require('./static/electricOpen.png');
 const electricCloseImg = require('./static/electricClose.png');
@@ -13,7 +20,37 @@ const switchRedOpen = require('./static/switchRedOpen.png');
 const switchRedClose = require('./static/switchRedClose.png');
 
 const { confirm } = Modal;
-const { Option } = Select;
+const { RangePicker } = DatePicker;
+
+const dateFormat = 'YYYY-MM-DD';
+const date = new Date();
+const earlyDate = new Date(date - 86400000 *3);
+
+const seperator1 = "-";
+
+const year = date.getFullYear();
+const earlyYear = earlyDate.getFullYear();
+
+let month = date.getMonth() + 1;
+let earlyMonth = earlyDate.getMonth() + 1;
+
+let strDate = date.getDate();
+let earlyStrDate = earlyDate.getDate();
+
+if (month >= 1 && month <= 9) {
+   month = "0" + month;
+}
+if (strDate >= 0 && strDate <= 9) {
+   strDate = "0" + strDate;
+}
+if (earlyMonth >= 1 && earlyMonth <= 9) {
+    earlyMonth = "0" + earlyMonth;
+}
+if (earlyStrDate >= 0 && earlyStrDate <= 9) {
+    earlyStrDate = "0" + earlyStrDate;
+}
+const today = year + seperator1 + month + seperator1 + strDate;
+const earlyToday = earlyYear + seperator1 + earlyMonth + seperator1 + earlyStrDate;
 
 @connect(({ electricInfo }) => ({
   electricInfo,
@@ -102,6 +139,13 @@ class homeIndex extends PureComponent {
           ]
         }, 
       ],
+      detailMdal:false,
+      detailName:'',
+      detailId:'',
+      detailStart:earlyToday,
+      detailEnd:today,
+      tableList:[],
+      currentPage: 1
     };
   }
 
@@ -130,6 +174,7 @@ class homeIndex extends PureComponent {
       } = electricInfo;
 
       this.setState({
+        ...this.state,
         switchTotal,
         electrifyTotal,
         powerFailure,
@@ -184,16 +229,192 @@ class homeIndex extends PureComponent {
 
         }else{
           message.error('更改失败')
-          // this.getCourseList();
         }
       });
     };  
 
+    showDetailModal(item){
+      this.setState({
+        ...this.state,
+        detailMdal: true,
+        detailName: item.switchName,
+        detailId: item.id,
+      })
+      this.getDetailData();
+    }
 
+
+    changeDetailDate(date, dateString) {
+      this.setState({
+        ...this.state,
+        detailStart: dateString[0],
+        detailEnd: dateString[1]
+      })
+    }
+
+    detailClose(){
+      this.setState({
+        ...this.state,
+        detailMdal: false,
+        detailName: '',
+        detailStart:earlyToday,
+        detailEnd:today
+      })
+    }
+
+    getDetailData(){
+      const { dispatch } = this.props;
+      const { detailStart, detailEnd, detailId, currentPage } = this.state;
+      const limit = 10;
+      const params = {
+        start: detailStart,
+        end: detailEnd,
+        id: detailId,
+        limit,
+        offset: limit * (currentPage - 1)
+      };
+      dispatch({
+        type: 'electricInfo/getDetailData',
+        payload: params,
+      }).then(response => {
+        const { electricInfo } = this.props;
+        const { chartsList, chartsLegend, tableList, detailTotal } = electricInfo;
+        this.renderCharts(chartsList, chartsLegend);
+        this.setState({
+          ...this.state,
+          tableList,
+          detailTotal
+        })
+      })
+    }
+
+    renderCharts(renderData, renderLegend){
+      let parent = document.getElementById("chartsParentDiv");
+      parent.innerHTML = '';
+      let divCharts = 'chartsDiv';
+      let chartsD = document.getElementById(divCharts);
+      let div = document.createElement('div');
+      div.setAttribute('id',divCharts);
+      div.style.height = '200px';
+      parent.appendChild(div);
+
+      let lineDate = [];
+      let lineLegend = renderLegend;
+      let lineList = [];
+      if(renderLegend){
+        for(let j=0; j<renderLegend.length; j++){
+          let seriesJson = {
+            name: renderLegend[i],
+            type: 'line',
+            data: []
+          }
+          lineList.push(seriesJson);
+        }
+      }
+      
+    
+      // 图表数据接口返回例子：
+    // {
+    //   legend:['一号开关','二号开关','三号开关'],    //对应Y轴得每条数据得名称
+    //   list:[
+    //     {
+    //       date:'20191230',
+    //       series:[
+    //         {
+    //           name:'一号开关',
+    //           data:'210'
+    //         },
+    //         {
+    //           name:'二号开关',
+    //           data:'240'
+    //         },
+    //         {
+    //           name:'三号开关',
+    //           data:'190'
+    //         }
+    //       ]
+    //     },
+    //     {
+    //       date:'20191231',
+    //       series:[
+    //         {
+    //           name:'一号开关',
+    //           data:'210'
+    //         },
+    //         {
+    //           name:'二号开关',
+    //           data:'240'
+    //         },
+    //         {
+    //           name:'三号开关',
+    //           data:'190'
+    //         }
+    //       ]
+    //     }
+    //   ]
+    // }
+
+    if(renderData){
+      for(let i=0; i<renderData.length; i++){
+        lineDate.push(renderData[i].date);
+        for(let k=0; k<renderData[i].series.length; k++){
+          for(let l=0; l<lineList.length; l++){
+            if(lineList[l].name == renderData[i].series[k].name){
+              lineList[l].data.push(renderData[i].series[k].data);
+            }
+          }
+        }
+      }
+    }
+      
+
+      let myCharts = echarts.init(document.getElementById(divCharts));
+      let option = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            crossStyle: {
+              color: '#999'
+            }
+          }
+        },
+        legend:{
+          data: lineLegend,
+          textStyle: {
+            fontSize: 14,
+            color: '#000'
+          },
+          show: true
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: lineDate
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: lineList
+      };
+      myCharts.setOption(option);
+    }
+
+
+    changePage({current}){
+      this.setState({
+        ...this.state,
+        currentPage: current
+      },
+      () => {
+        this.getDetailData();
+      }
+    )
+    }
   render() {
 
     //从状态存储器里取出值
-    const { electricList, switchTotal, electrifyTotal, powerFailure, switchRecord, emergency} = this.state;
+    const { electricList, switchTotal, electrifyTotal, powerFailure, switchRecord, emergency, detailMdal, detailName, tableList, detailTotal, currentPage} = this.state;
 
     const infoCol = {
       background:'#fff',
@@ -338,7 +559,7 @@ class homeIndex extends PureComponent {
       const switchCard = switchList =>
         switchList.map((item, index) => {
           return (
-            <Card size="small" title={item.switchName} style={{marginBottom:'8px'}}>
+            <Card size="small" title={<span style={{cursor:'pointer'}} onClick={this.showDetailModal.bind(this, item)}>{item.switchName}</span>} style={{marginBottom:'8px'}}>
               <Row>
                 <Col span={6}>
                   <div>
@@ -395,6 +616,27 @@ class homeIndex extends PureComponent {
             </Card>
           );
         });
+
+        const detailColumns = [
+          {
+            title: '序号',
+            width: 48,
+            render:() => (
+            <span>{index+1}</span>
+            )
+          },
+          {
+            title: 'id',
+            dataIndex: 'id',
+            key: 'id'
+          },
+          {
+            title: '时间',
+            dataIndex: 'time',
+            key: 'time'
+          },
+        ];
+
     return (
       <div>
           <Row style={{borderRight:'1px solid #e8e8e8'}}>
@@ -430,6 +672,33 @@ class homeIndex extends PureComponent {
           </Row>
           <Divider dashed />
           <Row gutter={16}>{indexCard(electricList)}</Row>
+          <Modal
+            visible={detailMdal}
+            title={detailName}
+            destroyOnClose={true}
+            maskClosable={false}
+            centered={true}
+            // onOk={this.handleOk}
+            onCancel={this.detailClose.bind(this)}
+            footer={[
+              <Button key="back" onClick={this.detailClose.bind(this)}>
+                关闭
+              </Button>,
+            ]}
+          >
+            <div>
+              <RangePicker defaultValue={[moment(earlyToday, dateFormat), moment(today, dateFormat)]} onChange={this.changeDetailDate.bind(this)} />
+              <Button type="primary" style={{marginLeft:'10px'}} onClick={this.getDetailData.bind(this)}>搜索</Button>
+            </div>
+            <div id="chartsParentDiv"></div>
+            <Table
+              size="small"
+              columns={detailColumns}
+              dataSource={tableList}
+              pagination={{ current: currentPage, total: detailTotal}}
+              onChange={this.changePage.bind(this)}
+            />
+          </Modal>
       </div>
 
     );
