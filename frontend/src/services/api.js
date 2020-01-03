@@ -122,7 +122,7 @@ export async function goLogin(params) {
 export async function getElectricList(params) {
   return request('/api/modbus_api/electricInfo/getElectricList', {
     method: 'GET',
-    body: params,
+    // body: params,
   });
 }
 
@@ -138,6 +138,6 @@ export async function switchFn(params) {
 export async function getDetailData(params) {
   return request('/api/modbus_api/electricInfo/getDetailData?start='+params.start+'&end='+params.end+'&id='+params.id+'&limit='+params.limit+'&offset='+params.offset, {
     method: 'GET',
-    body: params,
+    // body: params,
   });
 }
