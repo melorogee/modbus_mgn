@@ -89,11 +89,11 @@ export default class SiderMenu extends PureComponent {
   };
 
   componentDidMount() {
-    this.timer = setInterval(() => this.tick(), 1000);
+    // this.timer = setInterval(() => this.tick(), 1000);
   }
 
   componentWillUnmount() {
-    clearInterval(timer);
+    // clearInterval(timer);
   }
 
   tick() {

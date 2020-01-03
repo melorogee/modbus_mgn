@@ -164,7 +164,7 @@ class homeIndex extends PureComponent {
   }
 
   componentWillMount() {
-    // this.getElectricList();
+    this.getElectricList();
   }
 
   getElectricList() {
@@ -533,7 +533,7 @@ class homeIndex extends PureComponent {
     };
 
     const infoList = infoArr =>
-      infoArr.map((item, index) => {
+      (infoArr || []).map((item, index) => {
         return (
           <Row>
             <Col span={2}>
@@ -553,7 +553,7 @@ class homeIndex extends PureComponent {
       });
 
     const indexCard = electricList =>
-      electricList.map((item, index) => {
+      (electricList || []).map((item, index) => {
         return (
           <Col span={8} style={{ marginBottom: '16px', borderBottom: '1px dashed #e8e8e8' }}>
             <div
@@ -591,7 +591,7 @@ class homeIndex extends PureComponent {
       });
 
     const switchCard = switchList =>
-      switchList.map((item, index) => {
+      (switchList || []).map((item, index) => {
         return (
           <Card
             size="small"

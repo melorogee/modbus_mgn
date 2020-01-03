@@ -120,7 +120,7 @@ export async function goLogin(params) {
 
 //开关列表
 export async function getElectricList(params) {
-  return request('/api/modbus_api/getElectricList', {
+  return request('/api/modbus_api/electricInfo/getElectricList', {
     method: 'GET',
     body: params,
   });
@@ -128,7 +128,7 @@ export async function getElectricList(params) {
 
 //修改开关状态
 export async function switchFn(params) {
-  return request('/api/modbus_api/switchFn', {
+  return request('/api/modbus_api/electricInfo/switchFn', {
     method: 'POST',
     body: params,
   });
@@ -136,8 +136,8 @@ export async function switchFn(params) {
 
 //获取明细
 export async function getDetailData(params) {
-  return request('/api/modbus_api/getDetailData', {
-    method: 'POST',
+  return request('/api/modbus_api/electricInfo/getDetailData?start='+params.start+'&end='+params.end+'&id='+params.id+'&limit='+params.limit+'&offset='+params.offset, {
+    method: 'GET',
     body: params,
   });
 }

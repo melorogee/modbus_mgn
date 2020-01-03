@@ -46,7 +46,7 @@ ol {
 }
 :global .ant-layout-footer,
 :global .ant-layout {
-  background: #fff !important;
+  background: blue !important;
 }
 :global .ant-table-wrapper .ant-table .ant-table-content .ant-table-body {
   margin: 0;
