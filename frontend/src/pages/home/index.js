@@ -303,7 +303,7 @@ class homeIndex extends PureComponent {
     let chartsD = document.getElementById(divCharts);
     let div = document.createElement('div');
     div.setAttribute('id', divCharts);
-    div.style.height = '400px';
+    div.style.height = '380px';
     parent.appendChild(div);
 
     let lineDate = [];
@@ -354,7 +354,7 @@ class homeIndex extends PureComponent {
       },
       grid: {
         right:10,
-        top:100,
+        top:70,
         bottom:40,
         left:60
       },
@@ -490,13 +490,18 @@ class homeIndex extends PureComponent {
       borderTop: '1px solid #e8e8e8',
       borderBottom: '1px solid #e8e8e8',
       borderRight: '1px solid #e8e8e8',
-      padding: '4px 10px',
+      padding: '0 6px',
+      fontSize:'12px',
+      height:"31px",
+      lineHeight:'28px'
     };
 
     const switchInfoFirst = {
       display: 'inline-block',
       border: '1px solid #e8e8e8',
-      padding: '4px 10px',
+      padding: '0 6px',
+      height:"31px",
+      lineHeight:'28px'
     };
 
     const infoList = infoArr =>
@@ -644,12 +649,80 @@ class homeIndex extends PureComponent {
         title: 'id',
         dataIndex: 'id',
         key: 'id',
+        width: 48,
+      },
+      {
+        title: '三项线电压 A',
+        dataIndex: 'uab',
+        width: 100,
+        key: 'uab',
+      },
+      {
+        title: '三项线电压 B',
+        dataIndex: 'ubc',
+        width: 100,
+        key: 'ubc',
+      },
+      {
+        title: '三项线电压 C',
+        dataIndex: 'uca',
+        width: 100,
+        key: 'uca',
+      },
+      {
+        title: '三项线电流 A',
+        dataIndex: 'ia',
+        width: 100,
+        key: 'ia',
+      },
+      {
+        title: '三项线电流 B',
+        dataIndex: 'ib',
+        width: 100,
+        key: 'ib',
+      },
+      {
+        title: '三项线电流 C',
+        dataIndex: 'ic',
+        width: 100,
+        key: 'ic',
+      },
+      {
+        title: '合相功率',
+        dataIndex: 'pt',
+        width: 80,
+        key: 'pt',
+      },
+      {
+        title: '合相无功功',
+        dataIndex: 'qt',
+        width: 90,
+        key: 'qt',
+      },
+      {
+        title: '合相功率因数',
+        dataIndex: 'pft',
+        width: 100,
+        key: 'pft',
+      },
+      {
+        title: '频率',
+        dataIndex: 'freq',
+        width: 70,
+        key: 'freq',
+      },
+      {
+        title: '电能',
+        dataIndex: 'ep',
+        width: 70,
+        key: 'ep',
       },
       {
         title: '时间',
         dataIndex: 'time',
+        // width: 100,
         key: 'time',
-      },
+      }
     ];
 
     return (
@@ -706,7 +779,7 @@ class homeIndex extends PureComponent {
           maskClosable={false}
           centered={true}
           closable={false}
-          width={800}
+          width={1000}
           bodyStyle={{
             height:'470px',
             overflow:'auto'
@@ -726,6 +799,7 @@ class homeIndex extends PureComponent {
             dataSource={tableList}
             pagination={{ current: currentPage, total: detailTotal }}
             onChange={this.changePage.bind(this)}
+            scroll={{ x: 1252}}
           />
         </Modal>
       </div>
