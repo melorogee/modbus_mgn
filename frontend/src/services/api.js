@@ -133,3 +133,11 @@ export async function switchFn(params) {
     body: params,
   });
 }
+
+//获取明细
+export async function getDetailData(params) {
+  return request('/api/modbus_api/getDetailData', {
+    method: 'POST',
+    body: params,
+  });
+}
