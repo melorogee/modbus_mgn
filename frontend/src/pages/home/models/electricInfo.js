@@ -91,14 +91,14 @@ export default {
   },
 
   reducers: {
-    getElectricList(state, { payload }) {
+    getElectricListSuccess(state, { payload }) {
       const switchTotal = payload.switchTotal;
       const electrifyTotal = payload.electrifyTotal;
       const powerFailure = payload.powerFailure;
       const switchRecord = payload.switchRecord;
       const emergency = payload.emergency;
       const electricList = payload.electricList;
-    
+    console.log(payload);
       return {
         ...state,
         switchTotal,
