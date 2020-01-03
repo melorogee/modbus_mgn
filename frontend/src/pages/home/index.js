@@ -37,7 +37,7 @@ const { RangePicker } = DatePicker;
 
 const dateFormat = 'YYYY-MM-DD';
 const date = new Date();
-const earlyDate = new Date(date - 86400000 * 3);
+const earlyDate = new Date(date - 86400000 * 4);
 
 const seperator1 = '-';
 
@@ -249,7 +249,7 @@ class homeIndex extends PureComponent {
       detailName: item.switchName,
       detailId: item.id,
     });
-    this.getDetailData();
+    this.getDetailData(item.id);
   }
 
   changeDetailDate(date, dateString) {
@@ -270,14 +270,14 @@ class homeIndex extends PureComponent {
     });
   }
 
-  getDetailData() {
+  getDetailData(id) {
     const { dispatch } = this.props;
-    const { detailStart, detailEnd, detailId, currentPage } = this.state;
+    const { detailStart, detailEnd, currentPage, detailId } = this.state;
     const limit = 10;
     const params = {
       start: detailStart,
       end: detailEnd,
-      id: detailId,
+      id: id,
       limit,
       offset: limit * (currentPage - 1),
     };
@@ -303,7 +303,7 @@ class homeIndex extends PureComponent {
     let chartsD = document.getElementById(divCharts);
     let div = document.createElement('div');
     div.setAttribute('id', divCharts);
-    div.style.height = '200px';
+    div.style.height = '400px';
     parent.appendChild(div);
 
     let lineDate = [];
@@ -312,54 +312,13 @@ class homeIndex extends PureComponent {
     if (renderLegend) {
       for (let j = 0; j < renderLegend.length; j++) {
         let seriesJson = {
-          name: renderLegend[i],
+          name: renderLegend[j],
           type: 'line',
           data: [],
         };
         lineList.push(seriesJson);
       }
     }
-
-    // 图表数据接口返回例子：
-    // {
-    //   legend:['一号开关','二号开关','三号开关'],    //对应Y轴得每条数据得名称
-    //   list:[
-    //     {
-    //       date:'20191230',
-    //       series:[
-    //         {
-    //           name:'一号开关',
-    //           data:'210'
-    //         },
-    //         {
-    //           name:'二号开关',
-    //           data:'240'
-    //         },
-    //         {
-    //           name:'三号开关',
-    //           data:'190'
-    //         }
-    //       ]
-    //     },
-    //     {
-    //       date:'20191231',
-    //       series:[
-    //         {
-    //           name:'一号开关',
-    //           data:'210'
-    //         },
-    //         {
-    //           name:'二号开关',
-    //           data:'240'
-    //         },
-    //         {
-    //           name:'三号开关',
-    //           data:'190'
-    //         }
-    //       ]
-    //     }
-    //   ]
-    // }
 
     if (renderData) {
       for (let i = 0; i < renderData.length; i++) {
@@ -393,6 +352,12 @@ class homeIndex extends PureComponent {
         },
         show: true,
       },
+      grid: {
+        right:10,
+        top:100,
+        bottom:40,
+        left:60
+      },
       xAxis: {
         type: 'category',
         boundaryGap: false,
@@ -407,13 +372,14 @@ class homeIndex extends PureComponent {
   }
 
   changePage({ current }) {
+    const { detailId } = this.state;
     this.setState(
       {
         ...this.state,
         currentPage: current,
       },
       () => {
-        this.getDetailData();
+        this.getDetailData(detailId);
       }
     );
   }
@@ -431,6 +397,7 @@ class homeIndex extends PureComponent {
       tableList,
       detailTotal,
       currentPage,
+      detailId
     } = this.state;
 
     const infoCol = {
@@ -539,13 +506,13 @@ class homeIndex extends PureComponent {
             <Col span={2}>
               <span style={infoIndex}>{index + 1}</span>
             </Col>
-            <Col span={7}>
+            <Col span={6}>
               <span>{item.name}</span>
             </Col>
-            <Col span={7}>
+            <Col span={3}>
               <span>{item.detail}</span>
             </Col>
-            <Col span={6}>
+            <Col span={13}>
               <span>{item.time}</span>
             </Col>
           </Row>
@@ -563,15 +530,14 @@ class homeIndex extends PureComponent {
                 borderBottom: 'none',
                 padding: '8px',
                 background: '#fff',
-                textAlign: 'center',
               }}
             >
-              {/* <h3 style={{float:'left'}}>{item.electricBox}</h3> */}
+              <h3 style={{float:'left',margin:'0',lineHeight:'32px'}}>{item.electricBox}</h3>
               <div style={{ display: 'inline-block' }}>
                 {item.electricStatus ? (
-                  <img src={electricOpenImg} />
+                  <img src={electricOpenImg} style={{width:'32px',height:'32px',marginLeft:'10px'}}/>
                 ) : (
-                  <img src={electricCloseImg} />
+                  <img src={electricCloseImg} style={{width:'32px',height:'32px',marginLeft:'10px'}}/>
                 )}
               </div>
             </div>
@@ -672,7 +638,7 @@ class homeIndex extends PureComponent {
       {
         title: '序号',
         width: 48,
-        render: () => <span>{index + 1}</span>,
+        render: (text,record,index) => <span>{index + 1}</span>,
       },
       {
         title: 'id',
@@ -717,10 +683,34 @@ class homeIndex extends PureComponent {
         <Row gutter={16}>{indexCard(electricList)}</Row>
         <Modal
           visible={detailMdal}
-          title={detailName}
+          title={
+            <div style={{overflow:'hidden'}}>
+              <span>{detailName}</span>
+              <span style={{display:'inline-block',float:'right'}}>
+                <RangePicker
+                  style={{ marginLeft: '20px' }}
+                  defaultValue={[moment(earlyToday, dateFormat), moment(today, dateFormat)]}
+                  onChange={this.changeDetailDate.bind(this)}
+                />
+                <Button
+                  type="primary"
+                  style={{ marginLeft: '10px' }}
+                  onClick={this.getDetailData.bind(this,detailId)}
+                >
+                  搜索
+                </Button>
+              </span>
+            </div>
+          }
           destroyOnClose={true}
           maskClosable={false}
           centered={true}
+          closable={false}
+          width={800}
+          bodyStyle={{
+            height:'470px',
+            overflow:'auto'
+          }}
           // onOk={this.handleOk}
           onCancel={this.detailClose.bind(this)}
           footer={[
@@ -729,19 +719,6 @@ class homeIndex extends PureComponent {
             </Button>,
           ]}
         >
-          <div>
-            <RangePicker
-              defaultValue={[moment(earlyToday, dateFormat), moment(today, dateFormat)]}
-              onChange={this.changeDetailDate.bind(this)}
-            />
-            <Button
-              type="primary"
-              style={{ marginLeft: '10px' }}
-              onClick={this.getDetailData.bind(this)}
-            >
-              搜索
-            </Button>
-          </div>
           <div id="chartsParentDiv" />
           <Table
             size="small"
