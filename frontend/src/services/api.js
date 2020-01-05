@@ -128,7 +128,7 @@ export async function getElectricList(params) {
 
 //修改开关状态
 export async function switchFn(params) {
-  return request('/api/modbus_api/electricInfo/switchFn', {
+  return request('/api/modbus_api/electricInfo/goControl', {
     method: 'POST',
     body: params,
   });

@@ -183,13 +183,13 @@ class BasicLayout extends React.PureComponent {
     const currRouterData = this.matchParamsPath(pathname);
 
     if (!currRouterData) {
-      return ' modbus管理中心';
+      return '朱庄-配电间远程监控系统';
     }
     const message = formatMessage({
       id: currRouterData.locale || currRouterData.name,
       defaultMessage: currRouterData.name,
     });
-    return `${message} -  modbus管理中心`;
+    return `${message} -  朱庄-配电间远程监控系统`;
   };
 
   getLayoutStyle = () => {

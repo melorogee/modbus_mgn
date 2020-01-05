@@ -113,7 +113,9 @@ export default {
       console.log(payload);
       return {
         ...state,
-        success: payload,  //true or false
+        success: payload.success,  //true or false
+        msg: payload.msg,  //true or false
+
       };
     },
     getDetailDataSuccess(state, { payload }) {

@@ -8,7 +8,7 @@ import layoutstyles from '@/layouts/UserLayout.less';
 // import logo from '@/assets/logo.png';
 import Login from '@/components/Login';
 import styles from './Login.less';
-
+import bg from './bg.jpg';
 const { UserName, Submit ,Password} = Login;
 
 const copyright = (
@@ -23,7 +23,7 @@ const copyright = (
 }))
 class LoginPage extends Component {
   componentWillMount() {
-    document.title = '登录 -  modbus管理中心';
+    document.title = '登录 -  朱庄-配电间远程监控系统';
     // this.getLoginInfo();
   }
 
@@ -64,15 +64,15 @@ class LoginPage extends Component {
     const { login, submitting } = this.props;
     const { isShowLogin } = login;
     return (
-      <div>
+      <div >
         {isShowLogin ? (
-          <div className={layoutstyles.container}>
+          <div className={layoutstyles.container} style={{backgroundImage:`url(${bg})`}}>
             <div className={layoutstyles.content}>
               <div className={layoutstyles.top}>
                 <div className={layoutstyles.header}>
                   <Link to="/">
                     {/*<img alt="logo" className={layoutstyles.logo} src={logo} />*/}
-                    <span className={layoutstyles.title}> modbus管理中心</span>
+                    <span className={layoutstyles.title} > 朱庄-配电间远程监控系统</span>
                   </Link>
                 </div>
               </div>

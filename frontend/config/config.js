@@ -71,7 +71,7 @@ export default {
   },
   proxy: {
     '/api/': {
-      target: 'http://106.12.160.17:8080/',
+      target: 'http://127.0.0.1:8080/',
       changeOrigin: true,
       pathRewrite: { '^/api/': '/' },
     },

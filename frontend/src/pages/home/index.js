@@ -75,83 +75,17 @@ class homeIndex extends PureComponent {
     var date = moment().format('YYYYMMDD');
 
     this.state = {
-      switchTotal: 352, //开关总数
-      electrifyTotal: 22, //通电开关数
-      powerFailure: 330, //断电开关数
+      switchTotal: 0, //开关总数
+      electrifyTotal: 0, //通电开关数
+      powerFailure: 0, //断电开关数
       switchRecord: [
-        //开关记录
-        {
-          name: '一号开关',
-          detail: '开启',
-          time: '14：30',
-        },
-        {
-          name: '一号开关',
-          detail: '开启',
-          time: '14：30',
-        },
-        {
-          name: '一号开关',
-          detail: '开启',
-          time: '14：30',
-        },
-        {
-          name: '一号开关',
-          detail: '开启',
-          time: '14：30',
-        },
-        {
-          name: '一号开关',
-          detail: '开启',
-          time: '14：30',
-        },
-        {
-          name: '一号开关',
-          detail: '开启',
-          time: '14：30',
-        },
+
       ],
       emergency: [
-        //告警
-        {
-          name: '一号开关',
-          detail: '断电',
-          time: '14：30',
-        },
-        {
-          name: '一号开关',
-          detail: '断电',
-          time: '14：30',
-        },
+
       ],
       electricList: [
-        {
-          electricBox: '一号开关',
-          electricStatus: true,
-          electricList: [
-            {
-              id: 1,
-              switchName: '一号开关',
-              switchVoltage: [111, 222, 333], //电压
-              switchCurrent: [111, 222, 333], //电流
-              switchStatus: true,
-            },
-            {
-              id: 2,
-              switchName: '二号开关',
-              switchVoltage: [111, 222, 333],
-              switchCurrent: [111, 222, 333],
-              switchStatus: false,
-            },
-            {
-              id: 3,
-              switchName: '三号开关',
-              switchVoltage: [111, 222, 333],
-              switchCurrent: [111, 222, 333],
-              switchStatus: true,
-            },
-          ],
-        },
+
       ],
       detailMdal: false,
       detailName: '',
@@ -160,12 +94,59 @@ class homeIndex extends PureComponent {
       detailEnd: today,
       tableList: [],
       currentPage: 1,
+      visible: false,
+      userName : '',
+      password : '',
+      action : '',
+      tempId : '',
+      refreshTimeValue : 3
     };
   }
 
-  componentWillMount() {
-    this.getElectricList();
+  componentDidMount() {
+    this.timer = setInterval(() => this.getElectricList(), this.state.refreshTimeValue * 1000);
+
   }
+
+  componentWillMount() {
+
+    this.getElectricList();
+    this.timer && clearTimeout(this.timer);
+
+  }
+  showModal = (op,id) => {
+    // alert(op);
+    // alert(id);
+    this.setState({
+      visible: true,
+      action:op,
+      tempId:id
+    });
+  };
+
+
+
+  handleCancel = e => {
+    console.log(e);
+    this.setState({
+      visible: false,
+    });
+  };
+
+
+  handleOk = () => {
+    const { dispatch } = this.props;
+
+    // alert(this.state.userName);
+    // alert(this.state.password);
+    this.onSwitchChangeConfirm(this.state.action, this.state.tempId,this.state.userName,this.state.password)
+    this.setState({
+      visible: false,
+    });
+  };
+
+
+
 
   getElectricList() {
     const { dispatch } = this.props;
@@ -219,25 +200,32 @@ class homeIndex extends PureComponent {
     }
   }
 
-  onSwitchChangeConfirm = (type, id) => {
+  onSwitchChangeConfirm = (type, id,userName,password) => {
     const { dispatch } = this.props;
+    // alert(type);
+    // alert(id);
+    //
+    // alert(userName);
+    // alert(password);
 
     const params = {
       id: id,
       switch: type,
+      userName : userName,
+      password : password
     };
     dispatch({
       type: 'electricInfo/switchFn',
       payload: params,
     }).then(response => {
       const { electricInfo } = this.props;
-      const { success } = electricInfo;
+      const { success,msg } = electricInfo;
       if (success) {
         //为true则为成功
-        message.success('更改成功');
+        message.success(msg);
         this.getElectricList();
       } else {
-        message.error('更改失败');
+        message.error(msg);
       }
     });
   };
@@ -383,6 +371,25 @@ class homeIndex extends PureComponent {
       }
     );
   }
+
+
+
+  changeText(type,e){
+    if(type == 'userName'){
+      this.setState({
+        userName:  event.target.value
+      });
+    }
+
+    if(type == 'password'){
+      this.setState({
+        password:  event.target.value
+      });
+    }
+
+  }
+
+
   render() {
     //从状态存储器里取出值
     const {
@@ -509,7 +516,8 @@ class homeIndex extends PureComponent {
         return (
           <Row>
             <Col span={2}>
-              <span style={infoIndex}>{index + 1}</span>
+              {/*<span style={infoIndex}>{index + 1}</span>*/}
+              <span>{index + 1}</span>
             </Col>
             <Col span={6}>
               <span>{item.name}</span>
@@ -518,7 +526,7 @@ class homeIndex extends PureComponent {
               <span>{item.detail}</span>
             </Col>
             <Col span={13}>
-              <span>{item.time}</span>
+              <span>{item.time1}</span>
             </Col>
           </Row>
         );
@@ -597,7 +605,7 @@ class homeIndex extends PureComponent {
               </Col>
               <Col span={18}>
                 <div style={switchDiv}>
-                  <span style={switchInfoFirst}>电压三项</span>
+                  <span style={switchInfoFirst}>电压三相（A B C）V</span>
                   {(item.switchVoltage || []).map((ele, ind) => (
                     <span style={switchInfo}>{ele}</span>
                   ))}
@@ -612,14 +620,16 @@ class homeIndex extends PureComponent {
                       <span style={openBtnDisabled} />
                       <span
                         style={closeBtn}
-                        onClick={this.onSwitchChange.bind(this, 'close', item.id)}
+                        onClick={this.showModal.bind(this, 'close', item.id)}
+                        // onClick={this.onSwitchChange.bind(this, 'close', item.id)}
                       />
                     </span>
                   ) : (
                     <span>
                       <span
                         style={openBtn}
-                        onClick={this.onSwitchChange.bind(this, 'open', item.id)}
+                        // onClick={this.onSwitchChange.bind(this, 'open', item.id)}
+                        onClick={this.showModal.bind(this, 'open  ', item.id)}
                       />
                       <span style={closeBtnDisabled} />
                     </span>
@@ -628,7 +638,7 @@ class homeIndex extends PureComponent {
               </Col>
               <Col span={18}>
                 <div style={switchDiv}>
-                  <span style={switchInfoFirst}>电流三项</span>
+                  <span style={switchInfoFirst}>电流三相（A B C）V</span>
                   {(item.switchCurrent || []).map((ele, ind) => (
                     <span style={switchInfo}>{ele}</span>
                   ))}
@@ -640,17 +650,7 @@ class homeIndex extends PureComponent {
       });
 
     const detailColumns = [
-      {
-        title: '序号',
-        width: 48,
-        render: (text,record,index) => <span>{index + 1}</span>,
-      },
-      {
-        title: 'id',
-        dataIndex: 'id',
-        key: 'id',
-        width: 48,
-      },
+
       {
         title: '三项线电压 A',
         dataIndex: 'uab',
@@ -779,9 +779,9 @@ class homeIndex extends PureComponent {
           maskClosable={false}
           centered={true}
           closable={false}
-          width={1000}
+          width={1200}
           bodyStyle={{
-            height:'470px',
+            height:'670px',
             overflow:'auto'
           }}
           // onOk={this.handleOk}
@@ -801,6 +801,19 @@ class homeIndex extends PureComponent {
             onChange={this.changePage.bind(this)}
             scroll={{ x: 1252}}
           />
+        </Modal>
+
+
+
+        <Modal
+          title="确认操作开关"
+          visible={this.state.visible}
+          onOk={this.handleOk.bind(this)}
+          onCancel={this.handleCancel}
+        >
+          <Input placeholder="请输入用户名" value={this.state.userName} onChange={this.changeText.bind(this,"userName")} />
+
+          <Input type="password" placeholder="请输入密码"  style={{marginTop:'10px'}} value={this.state.password} onChange={this.changeText.bind(this,"password")}/>
         </Modal>
       </div>
     );

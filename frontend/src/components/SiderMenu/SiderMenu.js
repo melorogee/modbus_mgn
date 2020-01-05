@@ -89,11 +89,11 @@ export default class SiderMenu extends PureComponent {
   };
 
   componentDidMount() {
-    // this.timer = setInterval(() => this.tick(), 1000);
+    this.timer = setInterval(() => this.tick(), 1000);
   }
 
   componentWillUnmount() {
-    // clearInterval(timer);
+    clearInterval(timer);
   }
 
   tick() {
@@ -133,7 +133,7 @@ export default class SiderMenu extends PureComponent {
           {/*</div>*/}
           <div className="date-date">
             <span id="js-clock-full-year">{this.state.date.getFullYear()}</span> 年
-            <span id="js-clock-month">{this.state.date.getMonth()}</span> 月
+            <span id="js-clock-month">{this.state.date.getMonth()+1}</span> 月
             <span id="js-clock-date">{this.state.date.getDate()}</span> 日
             <span id="js-clock-day">{this.state.date.toLocaleTimeString()}</span>
           </div>
